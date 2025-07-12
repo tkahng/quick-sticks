@@ -4,16 +4,6 @@ import (
 	"testing"
 )
 
-func TestModulo(t *testing.T) {
-	t.Run("5 divide by 2", func(t *testing.T) {
-		got := 7 / 2
-		want := 3
-		if got != want {
-			t.Errorf("Wanted %d but got %d", want, got)
-		}
-	})
-}
-
 func TestGame_AddPlayer(t *testing.T) {
 	type fields struct {
 		ID        string
