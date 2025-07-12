@@ -29,11 +29,7 @@ func TestGame_AddPlayer(t *testing.T) {
 				Status:    "waiting",
 			},
 			args: args{
-				p: &Player{
-					ID:    "player 1",
-					Idx:   0,
-					Hands: [2]*Hand{},
-				},
+				p: NewPlayer("player 1", ""),
 			},
 			wantErr: false,
 		},
@@ -42,21 +38,13 @@ func TestGame_AddPlayer(t *testing.T) {
 			fields: fields{
 				ID: "waiting game",
 				Players: [2]*Player{
-					{
-						ID:    "player 1",
-						Idx:   0,
-						Hands: [2]*Hand{},
-					},
+					NewPlayer("player 1", ""),
 				},
 				TurnIndex: 0,
 				Status:    "waiting",
 			},
 			args: args{
-				p: &Player{
-					ID:    "player 1",
-					Idx:   0,
-					Hands: [2]*Hand{},
-				},
+				p: NewPlayer("player 2", ""),
 			},
 			wantErr: false,
 		},
@@ -65,26 +53,14 @@ func TestGame_AddPlayer(t *testing.T) {
 			fields: fields{
 				ID: "waiting game",
 				Players: [2]*Player{
-					{
-						ID:    "player 1",
-						Idx:   0,
-						Hands: [2]*Hand{},
-					},
-					{
-						ID:    "player 2",
-						Idx:   1,
-						Hands: [2]*Hand{},
-					},
+					NewPlayer("player 1", ""),
+					NewPlayer("player 2", ""),
 				},
 				TurnIndex: 0,
 				Status:    "waiting",
 			},
 			args: args{
-				p: &Player{
-					ID:    "player 1",
-					Idx:   0,
-					Hands: [2]*Hand{},
-				},
+				p: NewPlayer("player 3", ""),
 			},
 			wantErr: true,
 		},

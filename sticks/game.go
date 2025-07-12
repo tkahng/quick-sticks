@@ -31,7 +31,6 @@ func NewGame(id string) *Game {
 func (g *Game) AddPlayer(p *Player) error {
 	for idx, player := range g.Players {
 		if player == nil {
-			p.Idx = idx
 			g.Players[idx] = p
 			if idx == 1 {
 				g.Status = "playing"

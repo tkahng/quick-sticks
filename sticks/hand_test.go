@@ -20,32 +20,32 @@ func TestHand_Attack(t *testing.T) {
 		{
 			name: "attack hand with 0 fingers",
 			fields: fields{
-				Fingers: 5,
+				Fingers: 4,
 			},
 			args: args{
 				opp: &Hand{
-					Fingers: 0,
-				},
-			},
-			wantErr: true,
-		},
-		{
-			name: "attack hand with 1 fingers",
-			fields: fields{
-				Fingers: 5,
-			},
-			args: args{
-				opp: &Hand{
-					Fingers: 1,
+					fingers: 0,
 				},
 			},
 			wantErr: false,
+		},
+		{
+			name: "attack hand with 5 fingers",
+			fields: fields{
+				Fingers: 4,
+			},
+			args: args{
+				opp: &Hand{
+					fingers: 5,
+				},
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := &Hand{
-				Fingers: tt.fields.Fingers,
+				fingers: tt.fields.Fingers,
 			}
 			if err := h.Attack(tt.args.opp); (err != nil) != tt.wantErr {
 				t.Errorf("Hand.Attack() error = %v, wantErr %v", err, tt.wantErr)
@@ -54,12 +54,13 @@ func TestHand_Attack(t *testing.T) {
 	}
 }
 
-func TestHand_Split(t *testing.T) {
+func TestHand_Take(t *testing.T) {
 	type fields struct {
 		Fingers int
 	}
 	type args struct {
-		other *Hand
+		other  *Hand
+		points int
 	}
 	tests := []struct {
 		name    string
@@ -68,36 +69,51 @@ func TestHand_Split(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "split hand with 1 fingers",
+			name: "hand with 5 fingers takes 1 from other with 1",
 			fields: fields{
 				Fingers: 5,
 			},
 			args: args{
 				other: &Hand{
-					Fingers: 1,
+					fingers: 1,
 				},
+				points: 1,
 			},
 			wantErr: true,
 		},
 		{
-			name: "split hand with 2 fingers",
+			name: "hand with 1 fingers takes 1 from other with 2",
 			fields: fields{
-				Fingers: 5,
+				Fingers: 1,
 			},
 			args: args{
 				other: &Hand{
-					Fingers: 2,
+					fingers: 2,
 				},
+				points: 1,
 			},
 			wantErr: false,
+		},
+		{
+			name: "hand with 2 fingers takes 1 from other with 0",
+			fields: fields{
+				Fingers: 2,
+			},
+			args: args{
+				other: &Hand{
+					fingers: 0,
+				},
+				points: 1,
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := &Hand{
-				Fingers: tt.fields.Fingers,
+				fingers: tt.fields.Fingers,
 			}
-			if err := h.Split(tt.args.other); (err != nil) != tt.wantErr {
+			if err := h.Take(tt.args.other, tt.args.points); (err != nil) != tt.wantErr {
 				t.Errorf("Hand.Split() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
