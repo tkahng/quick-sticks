@@ -22,8 +22,7 @@ func TestGame_AddPlayer(t *testing.T) {
 		Status    string
 	}
 	type args struct {
-		p   *Player
-		idx int
+		p *Player
 	}
 	tests := []struct {
 		name    string
@@ -68,7 +67,6 @@ func TestGame_AddPlayer(t *testing.T) {
 					Idx:   0,
 					Hands: [2]*Hand{},
 				},
-				idx: 1,
 			},
 			wantErr: false,
 		},
