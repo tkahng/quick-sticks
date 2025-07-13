@@ -102,7 +102,11 @@ func (gs *GameServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	// Create player
-	playerID := generatePlayerID()
+	playerID := getPlayerIDFromContext(r.Context())
+	if playerID == "" {
+		gs.sendError(conn, "Player ID not found")
+		return
+	}
 	player := sticks.NewPlayer(playerID, "Player")
 
 	// Set up WebSocket connection for the player

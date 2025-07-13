@@ -1,10 +1,24 @@
 package server
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"time"
 )
+
+type contextKey string // Define a custom type for context keys to avoid collisions
+
+const playerIDkey contextKey = "player_id"
+
+func getPlayerIDFromContext(ctx context.Context) string {
+	playerID, _ := ctx.Value(playerIDkey).(string)
+	return playerID
+}
+
+func withPlayerID(ctx context.Context, playerID string) context.Context {
+	return context.WithValue(ctx, playerIDkey, playerID)
+}
 
 func Cors(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +58,8 @@ func PlayerID(h http.Handler) http.Handler {
 
 		// Set the cookie on the response writer
 		http.SetCookie(w, cookie)
+
+		r = r.WithContext(withPlayerID(r.Context(), playerID))
 
 		// Call the next handler in the chain
 		h.ServeHTTP(w, r)
