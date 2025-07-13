@@ -6,7 +6,8 @@ import (
 )
 
 // Serve the static HTML file
-func ServeHTML(w http.ResponseWriter, r *http.Request) {
+func (gs *GameServer) HandleHome(w http.ResponseWriter, r *http.Request) {
+
 	html := `
 <!DOCTYPE html>
 <html>
@@ -243,4 +244,5 @@ func ServeHTML(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Printf("Sent %d bytes of HTML\n", count)
+
 }

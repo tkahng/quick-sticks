@@ -22,28 +22,6 @@ const (
 	MessageTypeGameEnd        MessageType = "game_end"
 )
 
-// case 'game_start':
-//     gameState = message.data;
-//     document.getElementById('status').textContent = 'Game started!';
-//     updateGameDisplay();
-//     break;
-// case 'game_state':
-//     gameState = message.data;
-//     updateGameDisplay();
-//     break;
-// case 'error':
-//     alert('Error: ' + message.data);
-//     break;
-// case 'game_end':
-//     gameState = message.data;
-//     updateGameDisplay();
-//     if (gameState.winner) {
-//         const isWinner = (myPlayerNumber === 1 && gameState.winner.id === gameState.player1.id) ||
-//                        (myPlayerNumber === 2 && gameState.winner.id === gameState.player2.id);
-//         document.getElementById('status').textContent = isWinner ? 'You Win!' : 'You Lose!';
-//     }
-//     break;
-
 type (
 	Message struct {
 		Type MessageType `json:"type"`
@@ -112,11 +90,6 @@ func (gs *GameServer) setupRoutes() {
 	gs.mux.HandleFunc("/api/stats", gs.handleStats)
 	gs.mux.HandleFunc("/api/health", gs.handleHealth)
 }
-
-// handleHome serves the game client
-// func (gs *GameServer) handleHome(w http.ResponseWriter, r *http.Request) {
-// 	ServeHTML(w, r)
-// }
 
 // handleWebSocket handles WebSocket connections for real-time gameplay
 func (gs *GameServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
