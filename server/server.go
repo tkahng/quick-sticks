@@ -1,4 +1,4 @@
-package web
+package server
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/tkahng/sticks/sticks"
+	"github.com/tkahng/sticks"
 )
 
 type MessageType string

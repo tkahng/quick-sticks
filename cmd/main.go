@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/tkahng/sticks/web"
+	"github.com/tkahng/sticks/server"
 	// Replace with your actual module path
 )
 
@@ -20,14 +20,14 @@ func main() {
 	const serverPort = ":8080"
 
 	// Create and start game server
-	server := web.NewGameServer(maxConcurrentGames)
-	server.Start()
+	srv := server.NewGameServer(maxConcurrentGames)
+	srv.Start()
 
 	// Create HTTP server
 	// nolint:exhaustruct
 	httpServer := &http.Server{
 		Addr:    serverPort,
-		Handler: web.Cors(server.Hanlder()),
+		Handler: server.Cors(srv.Hanlder()),
 	}
 
 	// Start HTTP server in goroutine
@@ -55,7 +55,7 @@ func main() {
 	}
 
 	// Shutdown game server
-	server.Stop()
+	srv.Stop()
 
 	log.Println("Server stopped")
 }
