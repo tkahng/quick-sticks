@@ -98,4 +98,21 @@ func TestXxx(t *testing.T) {
 	if err != nil {
 		t.Errorf("Game.Attack() error = %v", err)
 	}
+	game.PrintScore()
+
+	// 2,1
+	// 3,1
+	err = game.Attack(true, true)
+	if err != nil {
+		t.Errorf("Game.Attack() error = %v", err)
+	}
+	game.PrintScore()
+	// 3,1
+	// 5,1
+	err = game.Attack(true, true)
+	if err != nil {
+		t.Errorf("Game.Attack() error = %v", err)
+	}
+	// game.
+	game.PrintScore()
 }

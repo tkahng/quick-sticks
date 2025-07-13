@@ -24,10 +24,9 @@ type GameInterface interface {
 	Split(fromLeft bool, points int) error
 	StartGame() error
 	EndTurn()
-	GetTurn() int
-
 	PrintScore()
 }
+
 type Game struct {
 	ID          string
 	Player1     *Player
@@ -41,12 +40,17 @@ type Game struct {
 
 // PrintScore implements GameInterface.
 func (g *Game) PrintScore() {
+	g.mutex.RLock()
+	defer g.mutex.RUnlock()
+
 	fmt.Printf("Player 1: %d, %d\n", g.Player1.LeftHand.fingers, g.Player1.RightHand.fingers)
 	fmt.Printf("Player 2: %d, %d\n", g.Player2.LeftHand.fingers, g.Player2.RightHand.fingers)
 }
 
 // GetTurn implements GameInterface.
 func (g *Game) GetTurn() int {
+	g.mutex.RLock()
+	defer g.mutex.RUnlock()
 	return g.CurrentTurn
 }
 
@@ -64,6 +68,7 @@ func NewGame(id string) *Game {
 		mutex:       &sync.RWMutex{},
 	}
 }
+
 func (g *Game) EndTurn() {
 	g.CurrentTurn = 1 - g.CurrentTurn
 }
@@ -82,10 +87,19 @@ func (g *Game) Attack(attackerIsLeft bool, defenderIsLeft bool) error {
 		return fmt.Errorf("game is not in progress")
 	}
 
-	fmt.Printf("getting players")
-	attacker := g.GetCurrentPlayer()
-	defender := g.GetOpponent()
-	fmt.Printf("got players")
+	fmt.Printf("getting players\n")
+
+	// Get players directly without calling methods that acquire locks
+	var attacker, defender *Player
+	if g.CurrentTurn == 0 {
+		attacker = g.Player1
+		defender = g.Player2
+	} else {
+		attacker = g.Player2
+		defender = g.Player1
+	}
+
+	fmt.Printf("got players\n")
 
 	attackerHand := attacker.GetHand(attackerIsLeft)
 	defenderHand := defender.GetHand(defenderIsLeft)
@@ -95,6 +109,7 @@ func (g *Game) Attack(attackerIsLeft bool, defenderIsLeft bool) error {
 	if err != nil {
 		return err
 	}
+
 	// Check if game is over
 	if !defender.Alive() {
 		g.State = GameStateFinished
@@ -116,7 +131,13 @@ func (g *Game) Split(fromLeft bool, newLeftPoints int) error {
 		return fmt.Errorf("game is not in progress")
 	}
 
-	player := g.GetCurrentPlayer()
+	// Get current player directly without calling methods that acquire locks
+	var player *Player
+	if g.CurrentTurn == 0 {
+		player = g.Player1
+	} else {
+		player = g.Player2
+	}
 
 	from := player.GetHand(fromLeft)
 	other := player.GetHand(!fromLeft)
@@ -124,6 +145,7 @@ func (g *Game) Split(fromLeft bool, newLeftPoints int) error {
 	if err != nil {
 		return err
 	}
+
 	// Switch turns
 	g.EndTurn()
 
