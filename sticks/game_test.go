@@ -1,15 +1,15 @@
 package sticks
 
 import (
+	"errors"
 	"testing"
 )
 
 func TestGame_AddPlayer(t *testing.T) {
 	type fields struct {
-		ID        string
-		Players   [2]*Player
-		TurnIndex int
-		Status    string
+		ID      string
+		Player1 *Player
+		Player2 *Player
 	}
 	type args struct {
 		p *Player
@@ -23,10 +23,9 @@ func TestGame_AddPlayer(t *testing.T) {
 		{
 			name: "add player to empty game",
 			fields: fields{
-				ID:        "empty game",
-				Players:   [2]*Player{},
-				TurnIndex: 0,
-				Status:    "waiting",
+				ID:      "empty game",
+				Player1: nil,
+				Player2: nil,
 			},
 			args: args{
 				p: NewPlayer("player 1", ""),
@@ -36,12 +35,9 @@ func TestGame_AddPlayer(t *testing.T) {
 		{
 			name: "add player to waiting game",
 			fields: fields{
-				ID: "waiting game",
-				Players: [2]*Player{
-					NewPlayer("player 1", ""),
-				},
-				TurnIndex: 0,
-				Status:    "waiting",
+				ID:      "waiting game",
+				Player1: NewPlayer("player 1", ""),
+				Player2: nil,
 			},
 			args: args{
 				p: NewPlayer("player 2", ""),
@@ -51,13 +47,9 @@ func TestGame_AddPlayer(t *testing.T) {
 		{
 			name: "add player to full game",
 			fields: fields{
-				ID: "waiting game",
-				Players: [2]*Player{
-					NewPlayer("player 1", ""),
-					NewPlayer("player 2", ""),
-				},
-				TurnIndex: 0,
-				Status:    "waiting",
+				ID:      "waiting game",
+				Player1: NewPlayer("player 1", ""),
+				Player2: NewPlayer("player 2", ""),
 			},
 			args: args{
 				p: NewPlayer("player 3", ""),
@@ -67,15 +59,43 @@ func TestGame_AddPlayer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &Game{
-				ID:        tt.fields.ID,
-				Players:   tt.fields.Players,
-				TurnIndex: tt.fields.TurnIndex,
-				Status:    tt.fields.Status,
+			g := NewGame(tt.fields.ID)
+			if tt.fields.Player1 != nil {
+				err := g.AddPlayer(tt.fields.Player1)
+				if err != nil {
+					t.Errorf("Game.AddPlayer() error = %v", err)
+				}
+			}
+			if tt.fields.Player2 != nil {
+				err := g.AddPlayer(tt.fields.Player2)
+				if err != nil {
+					t.Errorf("Game.AddPlayer() error = %v", err)
+				}
 			}
 			if err := g.AddPlayer(tt.args.p); (err != nil) != tt.wantErr {
 				t.Errorf("Game.AddPlayer() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
+	}
+}
+
+func TestXxx(t *testing.T) {
+	player1 := NewPlayer("player 1", "")
+	player2 := NewPlayer("player 2", "")
+	game := NewGame("game")
+
+	if err := errors.Join(game.AddPlayer(player1), game.AddPlayer(player2)); err != nil {
+		t.Errorf("Game.AddPlayer() error = %v", err)
+	}
+
+	if err := game.StartGame(); err != nil {
+		t.Errorf("Game.StartGame() error = %v", err)
+	}
+
+	// 1,1
+	// 2,1
+	err := game.Attack(true, true)
+	if err != nil {
+		t.Errorf("Game.Attack() error = %v", err)
 	}
 }

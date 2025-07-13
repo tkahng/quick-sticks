@@ -4,8 +4,18 @@ import (
 	"errors"
 )
 
+type HandInterface interface {
+	Alive() bool
+	Attack(opp *Hand) error
+	Set(num int)
+	Take(other *Hand, points int) error
+}
 type Hand struct {
 	fingers int // 0–4 (5+ becomes 0)
+}
+
+func (h *Hand) Set(num int) {
+	h.fingers = num
 }
 
 func (h *Hand) Attack(opp *Hand) error {
