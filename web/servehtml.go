@@ -7,7 +7,8 @@ import (
 
 // Serve the static HTML file
 func ServeHTML(w http.ResponseWriter, r *http.Request) {
-	html := `<!DOCTYPE html>
+	html := `
+<!DOCTYPE html>
 <html>
 <head>
     <title>Chopsticks Game</title>
@@ -64,13 +65,14 @@ func ServeHTML(w http.ResponseWriter, r *http.Request) {
 
     <script>
         const ws = new WebSocket('ws://localhost:8080/ws');
+        const status = document.getElementById('status');
         let gameState = null;
         let selectedHand = null;
         let isMyTurn = false;
         let myPlayerNumber = null;
 
         ws.onopen = function() {
-            document.getElementById('status').textContent = 'Connected - Waiting for opponent...';
+            status.textContent = 'Connected - Waiting for opponent...';
         };
 
         ws.onmessage = function(event) {
@@ -79,22 +81,24 @@ func ServeHTML(w http.ResponseWriter, r *http.Request) {
         };
 
         ws.onclose = function() {
-            document.getElementById('status').textContent = 'Disconnected';
+            status.textContent = 'Disconnected';
         };
 
         function handleMessage(message) {
             switch(message.type) {
                 case 'game_start':
                     gameState = message.data;
-                    document.getElementById('status').textContent = 'Game started!';
+                    status.textContent = 'Game started!';
                     updateGameDisplay();
                     break;
                 case 'game_state':
                     gameState = message.data;
+                    status.textContent = 'Game in progress';
                     updateGameDisplay();
                     break;
                 case 'error':
-                    alert('Error: ' + message.data);
+                    status.textContent = 'Error: ' + msg.data;
+                    alert(status.textContent);
                     break;
                 case 'game_end':
                     gameState = message.data;
@@ -102,7 +106,7 @@ func ServeHTML(w http.ResponseWriter, r *http.Request) {
                     if (gameState.winner) {
                         const isWinner = (myPlayerNumber === 1 && gameState.winner.id === gameState.player1.id) ||
                                        (myPlayerNumber === 2 && gameState.winner.id === gameState.player2.id);
-                        document.getElementById('status').textContent = isWinner ? 'You Win!' : 'You Lose!';
+                        status.textContent = isWinner ? 'You Win!' : 'You Lose!';
                     }
                     break;
             }

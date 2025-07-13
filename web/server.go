@@ -11,11 +11,15 @@ import (
 	"github.com/tkahng/sticks/sticks"
 )
 
-type GameActionType string
+type MessageType string
 
 const (
-	GameActionTypeAttack GameActionType = "attack"
-	GameActionTypeSplit  GameActionType = "split"
+	MessageTypeAttack         MessageType = "attack"
+	MessageTypeSplit          MessageType = "split"
+	MessageTypeStateGameStart MessageType = "state_game_start"
+	MessageTypeGameState      MessageType = "state_game_state"
+	MessageTypeError          MessageType = "error"
+	MessageTypeGameEnd        MessageType = "game_end"
 )
 
 // case 'game_start':
@@ -41,17 +45,15 @@ const (
 //     break;
 
 type (
-	GameActionInput struct {
-		Type GameActionType `json:"type"`
-		Data any            `json:"data"`
+	Message struct {
+		Type MessageType `json:"type"`
+		Data any         `json:"data"`
 	}
-
-	GameAttackData struct {
+	AttackMessageData struct {
 		WithLeft   bool `json:"with_left"`
 		AttackLeft bool `json:"attack_left"`
-		Points     int  `json:"points"`
 	}
-	GameSplitData struct {
+	SplitMessageData struct {
 		WithLeft bool `json:"with_left"`
 		Points   int  `json:"points"`
 	}
@@ -105,53 +107,16 @@ func (gs *GameServer) Stop() {
 
 // setupRoutes configures HTTP routes
 func (gs *GameServer) setupRoutes() {
-	gs.mux.HandleFunc("/", gs.handleHome)
-	gs.mux.HandleFunc("/ws", gs.handleWebSocket)
+	// gs.mux.HandleFunc("/", gs.handleHome)
+	gs.mux.HandleFunc("/api/ws", gs.handleWebSocket)
 	gs.mux.HandleFunc("/api/stats", gs.handleStats)
 	gs.mux.HandleFunc("/api/health", gs.handleHealth)
 }
 
 // handleHome serves the game client
-func (gs *GameServer) handleHome(w http.ResponseWriter, r *http.Request) {
-	// Serve your HTML game client here
-	w.Header().Set("Content-Type", "text/html")
-	// nolint:errcheck
-	w.Write([]byte(`
-		<!DOCTYPE html>
-		<html>
-		<head><title>Chopsticks Game</title></head>
-		<body>
-			<h1>Chopsticks Game</h1>
-			<div id="status">Connecting...</div>
-			<script>
-				const ws = new WebSocket('ws://localhost:8080/ws');
-				const status = document.getElementById('status');
-				
-				ws.onopen = function() {
-					status.textContent = 'Connected - Finding opponent...';
-				};
-				
-				ws.onmessage = function(event) {
-					const msg = JSON.parse(event.data);
-					console.log('Received:', msg);
-					
-					if (msg.type === 'game_matched') {
-						status.textContent = 'Game found! Starting...';
-					} else if (msg.type === 'game_state') {
-						status.textContent = 'Game in progress';
-					} else if (msg.type === 'error') {
-						status.textContent = 'Error: ' + msg.data;
-					}
-				};
-				
-				ws.onclose = function() {
-					status.textContent = 'Disconnected';
-				};
-			</script>
-		</body>
-		</html>
-	`))
-}
+// func (gs *GameServer) handleHome(w http.ResponseWriter, r *http.Request) {
+// 	ServeHTML(w, r)
+// }
 
 // handleWebSocket handles WebSocket connections for real-time gameplay
 func (gs *GameServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
@@ -207,7 +172,7 @@ func (gs *GameServer) handleGameSession(conn *websocket.Conn, player *sticks.Pla
 
 	// Handle game messages
 	for {
-		var msg GameActionInput
+		var msg Message
 		if err := conn.ReadJSON(&msg); err != nil {
 			log.Printf("WebSocket read error: %v", err)
 			break
@@ -233,7 +198,7 @@ func (gs *GameServer) handleGameSession(conn *websocket.Conn, player *sticks.Pla
 }
 
 // processGameAction processes a game action from a player
-func (gs *GameServer) processGameAction(game *sticks.Game, player *sticks.Player, msg GameActionInput) error {
+func (gs *GameServer) processGameAction(game *sticks.Game, player *sticks.Player, msg Message) error {
 	actionType := msg.Type
 
 	// Verify it's the player's turn
@@ -243,10 +208,10 @@ func (gs *GameServer) processGameAction(game *sticks.Game, player *sticks.Player
 	}
 
 	switch actionType {
-	case GameActionTypeAttack:
-		var data GameAttackData
+	case MessageTypeAttack:
+		var data AttackMessageData
 		var ok bool
-		if data, ok = msg.Data.(GameAttackData); !ok {
+		if data, ok = msg.Data.(AttackMessageData); !ok {
 			return fmt.Errorf("invalid action data")
 		}
 		attackerIsLeft := data.WithLeft
@@ -254,10 +219,10 @@ func (gs *GameServer) processGameAction(game *sticks.Game, player *sticks.Player
 
 		return game.Attack(attackerIsLeft, defenderIsLeft)
 
-	case GameActionTypeSplit:
-		var data GameSplitData
+	case MessageTypeSplit:
+		var data SplitMessageData
 		var ok bool
-		if data, ok = msg.Data.(GameSplitData); !ok {
+		if data, ok = msg.Data.(SplitMessageData); !ok {
 			return fmt.Errorf("invalid action data")
 		}
 		fromLeft := data.WithLeft
