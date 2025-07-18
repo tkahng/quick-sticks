@@ -79,7 +79,7 @@ func TestGame_AddPlayer(t *testing.T) {
 	}
 }
 
-func TestXxx(t *testing.T) {
+func TestGame_Attack(t *testing.T) {
 	player1 := NewPlayer("player 1", "")
 	player2 := NewPlayer("player 2", "")
 	game := NewGame("game")

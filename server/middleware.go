@@ -37,10 +37,8 @@ func PlayerID(h http.Handler) http.Handler {
 		playerIDCookie, err := r.Cookie("player_id")
 		if err != nil {
 			slog.Error("Failed to get player ID cookie", slog.Any("error", err))
-			http.Error(w, "Failed to get player ID cookie", http.StatusInternalServerError)
-			return
-		}
-		if playerIDCookie.Value == "" {
+			playerID = generatePlayerID()
+		} else if playerIDCookie.Value == "" {
 			playerID = generatePlayerID()
 		} else {
 			playerID = playerIDCookie.Value

@@ -55,17 +55,13 @@ func NewGameServer(maxConcurrentGames int) *GameServer {
 	return &GameServer{
 		broker: broker,
 		upgrader: websocket.Upgrader{
-			CheckOrigin: func(r *http.Request) bool {
-				return true // Allow all origins in development
-			},
-			HandshakeTimeout: 0,
-			ReadBufferSize:   0,
-			WriteBufferSize:  0,
-			WriteBufferPool:  nil,
-			Subprotocols:     []string{},
-			Error: func(w http.ResponseWriter, r *http.Request, status int, reason error) {
-				panic("TODO")
-			},
+			ReadBufferSize:    1024,
+			WriteBufferSize:   1024,
+			HandshakeTimeout:  0,
+			WriteBufferPool:   nil,
+			Subprotocols:      nil,
+			Error:             nil,
+			CheckOrigin:       nil,
 			EnableCompression: false,
 		},
 		mux: http.NewServeMux(),
@@ -86,7 +82,7 @@ func (gs *GameServer) Stop() {
 // setupRoutes configures HTTP routes
 func (gs *GameServer) setupRoutes() {
 	// gs.mux.HandleFunc("/", gs.handleHome)
-	gs.mux.HandleFunc("/api/ws", gs.handleWebSocket)
+	gs.mux.HandleFunc("/api/ws", PlayerID(http.HandlerFunc(gs.handleWebSocket)).ServeHTTP)
 	gs.mux.HandleFunc("/api/stats", gs.handleStats)
 	gs.mux.HandleFunc("/api/health", gs.handleHealth)
 }
