@@ -1,6 +1,26 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "keep",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.defaultColorDecorators": "never",
+    "editor.quickSuggestions": {
+      "strings": true,
+      "other": true,
+      "comments": false
+    }
+  },
+  "git.ignoredRepositories": ["/opt/homebrew/.git"],
   "editor.formatOnSave": true,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "files.exclude": {
+    "/opt/homebrew/": true
+  },
+  "explorer.excludeGitIgnore": false,
   "[go]": {
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
@@ -18,5 +38,77 @@
   "go.alternateTools": {
     "customFormatter": "golangci-lint"
   },
-  "go.formatFlags": ["fmt", "--stdin"]
+  "go.formatFlags": ["fmt", "--stdin"],
+  "editor.linkedEditing": true,
+  "css.customData": [".vscode/tailwindcss.json"],
+  "[sql]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "mtxr.sqltools"
+  },
+  "editor.formatOnSaveMode": "file",
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "editor.formatOnPaste": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always",
+    "source.organizeImports": "always"
+  },
+  "editor.suggest.showReferences": true,
+  "editor.gotoLocation.multipleTypeDefinitions": "gotoAndPeek",
+  "go.enableCodeLens": {
+    "runtest": true
+  },
+  "go.inlayHints.assignVariableTypes": false,
+  "go.inlayHints.parameterNames": false,
+
+  "files.associations": {
+    "*.css": "tailwindcss",
+    "*.scss": "tailwindcss"
+  },
+  "emmet.includeLanguages": {
+    "templ": "html"
+  },
+  "gopls": {
+    "ui.semanticTokens": false
+    // "formatting.gofumpt": true
+  },
+  "editor.codeLens": true,
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "always",
+      "source.organizeImports": "always"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.suggest.showReferences": true,
+    "editor.codeLens": true,
+    "editor.gotoLocation.multipleTypeDefinitions": "gotoAndPeek"
+  },
+  "[typescriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "always",
+      "source.organizeImports": "always"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.suggest.showReferences": true,
+    "editor.codeLens": true,
+    "editor.gotoLocation.multipleTypeDefinitions": "gotoAndPeek"
+  },
+
+  "go.coverMode": "atomic",
+  "go.coverOnSingleTestFile": true,
+  "go.coverOnSingleTest": true,
+  "go.coverShowCounts": true,
+  "workbench.editor.enablePreviewFromCodeNavigation": true,
+  "workbench.editor.enablePreviewFromQuickOpen": true,
+  "workbench.editor.highlightModifiedTabs": true,
+  "yaml.schemas": {
+    "https://golangci-lint.run/jsonschema/golangci.jsonschema.json": "file:///Users/tkahng/GitHub/trk-go/authgo/.golangci-lint.yml"
+  },
+  "explorer.fileNesting.enabled": true
 }
